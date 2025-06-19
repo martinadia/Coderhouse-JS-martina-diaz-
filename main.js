@@ -42,7 +42,7 @@ function pago(){
     alert(mensaje)
 }
 
-const menu = 'Bienvenido a Zummalu Indumentaria!\n 1- Iniciar Sesion\n 2- Agregar Producto\n 3- Ver el Carrito\n 4- Continuar con el pago\n 5- Salir'
+const menu = 'Bienvenido a "BeautIA, The Best Intelligent Tecnology"\n 1- Iniciar Sesion\n 2- Agregar Producto\n 3- Ver el Carrito\n 4- Continuar con el pago\n 5- Salir'
 
 while(bandera) {
     let opciones = Number(prompt(menu))
@@ -74,3 +74,10 @@ while(bandera) {
             break
     }     
 }
+
+const btnAbrir = document.getElementById('abrirFormulario');
+const contenedor = document.getElementById('formularioContainer');
+
+btnAbrir.addEventListener('click', () => {
+    contenedor.classList.toggle('oculto');
+});
