@@ -1,0 +1,23 @@
+[
+    {
+      "id": 1,
+      "nombre": "My Mind Mirror (Circle)",
+      "precio": 650000,
+      "imagen": "https://i.pinimg.com/736x/45/ac/33/45ac33f2c89266ac8a5c9c9e2143f7d0.jpg",
+      "alt": "Espejo que indica los cuidados de la piel con una forma circular"
+    },
+    {
+      "id": 2,
+      "nombre": "My Mind Mirror (Square)",
+      "precio": 700000,
+      "imagen": "https://i.pinimg.com/736x/60/86/14/6086147de1901095db14d70dfd381c10.jpg",
+      "alt": "Espejo que indica los cuidados de la piel con una forma cuadrada"
+    },
+    {
+      "id": 3,
+      "nombre": "My Mind Mirror (Wavy)",
+      "precio": 750000,
+      "imagen": "https://i.pinimg.com/736x/c0/2d/68/c02d689317ed140ee882466a917fd8ec.jpg",
+      "alt": "Espejo que indica los cuidados de la piel con una forma ondulada"
+    }
+]

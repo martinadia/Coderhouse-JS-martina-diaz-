@@ -34,6 +34,24 @@ if (carritoabierto) {
     carritopanel.classList.remove('active')
 }
 
+// productos
+
+const productos = []
+
+async function traerproductos() {
+    try {
+        const resultado = await fetch('./data.json')
+        const data = await resultado.json()
+
+        data.forEach((el) => {
+            productos.push(el)
+        })
+
+    } catch (error) {
+        console.error("Error al traer productos:", error)
+    }
+}
+
 botoncarrito.addEventListener('click', () => {
     if (!carritopanel.classList.contains('active')) {
         carritoabierto = true
@@ -46,49 +64,31 @@ botoncarrito.addEventListener('click', () => {
     localStorage.setItem('carrito-abierto', JSON.stringify(carritoabierto))
 })
 
-const productos = [
-    {
-      id: 1,
-      nombre: "My Mind Mirror (Circle)",
-      precio: 650000,
-      imagen: 'https://i.pinimg.com/736x/45/ac/33/45ac33f2c89266ac8a5c9c9e2143f7d0.jpg',
-      alt: "Espejo que indica los cuidados de la piel con una forma circular"
-    },
-    {
-      id: 2,
-      nombre: "My Mind Mirror (Square)",
-      precio: 700000,
-      imagen: "https://i.pinimg.com/736x/60/86/14/6086147de1901095db14d70dfd381c10.jpg",
-      alt: "Espejo que indica los cuidados de la piel con una forma cuadrada"
-    },
-    {
-      id: 3,
-      nombre: "My Mind Mirror (Wavy)",
-      precio: 750000,
-      imagen: "https://i.pinimg.com/736x/c0/2d/68/c02d689317ed140ee882466a917fd8ec.jpg",
-      alt: "Espejo que indica los cuidados de la piel con una forma ondulada"
-    }
-];
-
-function run () {
+async function run () {
+    await traerproductos()
     mostradordeproductos()
     creaciondeproductos()
     eventosagregar()
 }
 
 function agregaralcarrito(producto) {
-    Carrito.push(producto)
-    localStorage.setItem("carrito", JSON.stringify(Carrito))
+    let id = Carrito.findIndex((el) => el.id === producto.id)
+    if (id == -1) {
+        Carrito.push(producto)
+        Carrito[Carrito.length - 1].cantidad = 1
+    } else {
+        Carrito[id].cantidad += 1
+    }
 }
 
 function calculartotal() {
     return Carrito.reduce((acc, el) => {
-        return acc += Number(el.precio)
+        return (acc += Number(el.precio) * el.cantidad)
     }, 0)
 }
 
 function buscarapartirdeid(id) {
-    let producto = productos.find((el) => el.id == id)
+    let producto = productos.find((el) => el.id == id.slice(0, -1))
 
     return producto
 }
@@ -107,10 +107,42 @@ function eventosagregar() {
     })
 }
 
+function eventosagregarmas() {
+    const botones = document.querySelectorAll('.cantidadbotonmas')
+    const botonesarray = Array.from(botones)
+
+    botonesarray.forEach(boton=>{
+        boton.addEventListener("click", (e) =>{
+            let id = Carrito.findIndex(ele => ele.id == e.target.parentNode.parentNode.id.slice(0, -1))
+            Carrito[id].cantidad += 1
+            mostradordeproductos()
+        })
+    })
+}
+
+function eventosagregarmenos() {
+    const botones = document.querySelectorAll('.cantidadbotonmenos')
+    const botonesarray = Array.from(botones)
+
+    botonesarray.forEach((boton) => {
+        boton.addEventListener('click', (e) => {
+            let id = Carrito.findIndex(
+                (ele) => ele.id == e.target.parentNode.parentNode.id.slice(0, -1)
+            )
+            if (Carrito[id].cantidad == 1){
+                Carrito.splice(id, 1)
+            } else {
+                Carrito[id].cantidad -= 1
+            }
+            mostradordeproductos()
+        })
+    })
+}
+
 function creaciondeproductos() {
     productos.forEach((el) => {
         let producto =  
-            `<div class="producto" id=${el.id}>
+            `<div class="producto" id=${el.id + 'V'}>
                 <img src=${el.imagen} alt=${el.alt}>
                 <h3>${el.nombre}</h3>
                 <p>Un espejo inteligente que indica los cuidados que tu piel necesita</p>
@@ -128,19 +160,28 @@ function mostradordeproductos() {
     cosasdelcarrito.innerHTML = ''
     Carrito.forEach((el) => {
         let producto = 
-            `<div class="producto">
+            `<div class="producto" id=${el.id + 'V'}>
                 <img src=${el.imagen} alt=${el.alt}>
                 <h3>${el.nombre}</h3>
-                <span class="precio">$${el.precio}</span>
+                <div class="cantidaddeproductos">
+                    <button class="cantidadboton cantidadbotonmenos"></button>
+                    <span class="cantidadnumero">${el.cantidad}</span>
+                    <button class="cantidadboton cantidadbotonmas"></button>
+                </div>
+                <span class="precio">$${el.precio * el.cantidad}</span>
             </div>`
         cosasdelcarrito.innerHTML += producto
     })
 
     total.innerHTML = ''
+    eventosagregarmas()
+    eventosagregarmenos()
+    localStorage.setItem("carrito", JSON.stringify(Carrito))
     total.innerHTML = `Total a pagar: $${calculartotal()}`
 }
 
 botonterminarcompra.addEventListener('click', () => {
+    
     Carrito = []
     localStorage.removeItem("carrito")
     mostradordeproductos()
