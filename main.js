@@ -1,27 +1,108 @@
 // formulario inicio de sesion 
-const iniciarsesion = document.getElementById('abrirformulario');
-const formulario = document.getElementById('formulario');
-const formularioVisible = localStorage.getItem('formulariovisible');
+const forminiciodesesion = document.getElementById('inicio-de-sesion');
+let usuarioslogueados = JSON.parse(localStorage.getItem("usuarios")) || [ 
+    {
+        email: "martinadiaz@gmail.com",
+        contraseña: "beautIA",
+    }
+]
 
-if (formularioVisible === 'true') {
-    formulario.classList.remove('oculto');
-} else {
-    formulario.classList.add('oculto');
+function iniciodesesion() {
+    const el = document.getElementById('inicio-de-sesion');
+    if (!el) return;
+
+    el.addEventListener('click', () => {
+        Swal.fire({
+            title: "Ingrese su usuario",
+            html: `
+                <input id="swal-input1" class="swal2-input" placeholder="Email">
+                <input id="swal-input2" class="swal2-input" placeholder="Contraseña" type="password">
+            `,
+            preConfirm: () => {
+                const email = document.getElementById('swal-input1').value
+                const contraseña = document.getElementById('swal-input2').value
+
+                if (!email || !contraseña) {
+                    Swal.showValidationMessage('Completá ambos campos')
+                    return false
+                }
+
+                return { email, contraseña }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { email, contraseña } = result.value
+
+                let usuarioExistente = usuarioslogueados.find(
+                    (u) => u.email === email
+                )
+
+                if (usuarioExistente) {
+                    Swal.fire({
+                        title: "Usuario ya registrado",
+                        text: "Ese correo ya se encuentra en uso. Por favor usá otro.",
+                        icon: "error",
+                        timer: 1800,
+                        showConfirmButton: false,
+                    });
+                } else {
+                    // Registrar al nuevo usuario
+                    usuarioslogueados.push({ email, contraseña });
+                    localStorage.setItem("usuarios", JSON.stringify(usuarioslogueados));
+
+                Swal.fire({
+                    title: "Registrado correctamente",
+                    text: "Tu cuenta ha sido creada e iniciada la sesión.",
+                    icon: "success",
+                    timer: 1800,
+                    showConfirmButton: false,
+                });
+                }
+            }
+        });
+    });
 }
 
-iniciarsesion.addEventListener('click', () => {
-    formulario.classList.toggle('oculto');
+function versielusuarioestalogueado(emailUsuario) {
+    return usuarioslogueados.find((usuario) => {
+        return usuario.email == nombreUsuario
+    })
+}
 
-    const estaVisible = !formulario.classList.contains('oculto');
-    localStorage.setItem('formulariovisible', estaVisible);
-});
+forminiciodesesion.addEventListener('submit', (e) => {
+    e.preventDefault()
+    let elusuarioyaexiste = versielusuarioestalogueado(e.target[0].value)
+    if (elusuarioyaexiste) {
+        Swal.fire({
+            title: "Lo siento!",
+            text: "El usuario ya se encuentra en uso, ingrese otro!",
+            icon: "error",
+            timer: 1300,
+            showConfirmButton: false,
+        });
+    } else {
+        usuarioslogueados.push({
+            email: e.target[0].value,
+            contraseña: e.target[1].value,
+        })
+        localStorage.setItem('usuarios', JSON.stringify(usuarioslogueados))
+        Swal.fire({
+            title: "Bienvenido!",
+            text: "Se ha iniciado sesion correctamente!",
+            icon: "success",
+            timer: 1300,
+            showConfirmButton: false,
+        });
+    }
+})
 
 // carrito
 const botoncarrito = document.getElementById('boton-carrito')
 const carritopanel = document.getElementById('carrito')
 const contenedorproductos = document.getElementById('contenedor-productos')
 const cosasdelcarrito = document.getElementById('cosas-del-carrito')
-const botonterminarcompra = document.getElementById('terminar-la-compra')
+const botonvaciarcarrito = document.getElementById('vaciarcarrito')
+const botonterminarlacompra = document.getElementById('terminarlacompra')
 const total = document.getElementById('total')
 
 let Carrito = JSON.parse(localStorage.getItem("carrito")) || []
@@ -69,6 +150,7 @@ async function run () {
     mostradordeproductos()
     creaciondeproductos()
     eventosagregar()
+    iniciodesesion()
 }
 
 function agregaralcarrito(producto) {
@@ -101,6 +183,14 @@ function eventosagregar() {
         el.addEventListener('click', (e) => {
             let id = e.target.parentNode.id
             let producto = buscarapartirdeid(id)
+            Swal.fire({
+                title: "Se agrego " + producto.nombre,
+                timer: 1500,
+                icon: "success",
+                draggable: true,
+                showConfirmButton: false, 
+            });
+            
             agregaralcarrito(producto)
             mostradordeproductos()
         })
@@ -164,9 +254,9 @@ function mostradordeproductos() {
                 <img src=${el.imagen} alt=${el.alt}>
                 <h3>${el.nombre}</h3>
                 <div class="cantidaddeproductos">
-                    <button class="cantidadboton cantidadbotonmenos"></button>
+                    <button class="cantidadboton cantidadbotonmenos">-</button>
                     <span class="cantidadnumero">${el.cantidad}</span>
-                    <button class="cantidadboton cantidadbotonmas"></button>
+                    <button class="cantidadboton cantidadbotonmas">+</button>
                 </div>
                 <span class="precio">$${el.precio * el.cantidad}</span>
             </div>`
@@ -180,11 +270,68 @@ function mostradordeproductos() {
     total.innerHTML = `Total a pagar: $${calculartotal()}`
 }
 
-botonterminarcompra.addEventListener('click', () => {
-    
-    Carrito = []
-    localStorage.removeItem("carrito")
-    mostradordeproductos()
+botonvaciarcarrito.addEventListener('click', () => { 
+    if (Carrito.length === 0) {
+        Swal.fire({
+            title: "El carrito se encuentra vacio! Agregue sus productos",
+            timer: 1300,
+            showConfirmButton: false, 
+        })
+        return
+    }
+    Swal.fire({
+        title: "Estas seguro de vaciar el carrito?",
+        text: "No podras retornar al mismo!",
+        icon: "warning",
+        iconColor: "#d33",
+        showCancelButton: true,
+        confirmButtonColor: "#B2A0DF",
+        cancelButtonColor: "#CCE6E0",
+        confirmButtonText: "Si, eliminar!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Carrito = []
+            localStorage.removeItem("carrito")
+            mostradordeproductos()
+
+            Swal.fire({
+                title: "¡Eliminado!",
+                text: "Tu carrito ha sido eliminado.",
+                icon: "success"
+            });
+        }
+    });
+});
+
+botonterminarlacompra.addEventListener('click', () => { 
+    if (Carrito.length === 0) {
+        Swal.fire({
+            title: "No se puede terminar la compra. El carrito se encuentra vacio, agregue sus productos!",
+            timer: 2300,
+            showConfirmButton: false, 
+        })
+        return
+    }
+    Swal.fire({
+        title: "Complete los datos",
+        html: `
+            <input id="swal-input1" class="swal2-input" placeholder="Nombre y apellido del recibidor">
+            <input id="swal-input2" class="swal2-input" placeholder="Direccion de entrega">
+            <input id="swal-input3" class="swal2-input" placeholder="Metodo de pago">
+            `,
+            preConfirm: () => {
+            const nombreyapellido = document.getElementById('swal-input1').value
+            const direcciondeentrega = document.getElementById('swal-input2').value
+            const metododepago = document.getElementById('swal-input3').value
+              
+            if (!nombreyapellido || !direcciondeentrega || !metododepago) {
+            Swal.showValidationMessage('Completá todos los campos!')
+            return false
+            }
+              
+            return { nombreyapellido, direcciondeentrega, metododepago }
+        }
+    });
 })
 
-run()
+run();

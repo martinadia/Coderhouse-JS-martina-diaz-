@@ -145,3 +145,16 @@ input {
     font-size: 0.95rem;
     color: #333;
 }
+
+.cantidaddeproductos {
+    width: 50%;
+    margin: 10px auto; 
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.1);
+    gap: 10px;
+}
+
