@@ -235,8 +235,8 @@ function creaciondeproductos() {
             `<div class="producto" id=${el.id + 'V'}>
                 <img src=${el.imagen} alt=${el.alt}>
                 <h3>${el.nombre}</h3>
-                <p>Un espejo inteligente que indica los cuidados que tu piel necesita</p>
-                <span class="precio">$${el.precio}</span>
+                <p>${el.description}</p>
+                <span class="precio-producto">$${el.precio}</span>
                 <button class="boton-agregar-al-carrito">
                     Agregar al carrito
                 </button>

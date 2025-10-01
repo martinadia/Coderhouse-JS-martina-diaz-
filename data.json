@@ -1,23 +1,26 @@
 [
     {
       "id": 1,
-      "nombre": "My Mind Mirror (Circle)",
-      "precio": 650000,
+      "nombre": "My Mind Mirror",
+      "precio": 1000000,
       "imagen": "https://i.pinimg.com/736x/45/ac/33/45ac33f2c89266ac8a5c9c9e2143f7d0.jpg",
+      "description": "Espejo con IA que indica los cuidados que la piel necesita",
       "alt": "Espejo que indica los cuidados de la piel con una forma circular"
     },
     {
       "id": 2,
-      "nombre": "My Mind Mirror (Square)",
-      "precio": 700000,
-      "imagen": "https://i.pinimg.com/736x/60/86/14/6086147de1901095db14d70dfd381c10.jpg",
-      "alt": "Espejo que indica los cuidados de la piel con una forma cuadrada"
+      "nombre": "My Mind Mirror de bolsillo",
+      "precio": 650000,
+      "imagen": "./img/MMMbolsillo.png",
+      "description": "Espejo con IA en tamaño de bolsillo que indica los cuidados que la piel necesita",
+      "alt": "Espejo que indica los cuidados de la piel con un tamaño miniatura"
     },
     {
       "id": 3,
-      "nombre": "My Mind Mirror (Wavy)",
-      "precio": 750000,
-      "imagen": "https://i.pinimg.com/736x/c0/2d/68/c02d689317ed140ee882466a917fd8ec.jpg",
+      "nombre": "Secador de pelo (G.A.M.A)",
+      "precio": 500000,
+      "imagen": "./img/secador-gama.jpeg",
+      "description": "Secador de pelo silencioso con bluetooth inalambrico en colaboracion con G.A.M.A",
       "alt": "Espejo que indica los cuidados de la piel con una forma ondulada"
     }
 ]
